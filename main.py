@@ -1,23 +1,28 @@
 #!/usr/bin/env python3
-"""Unsent micro-confession entry for make.fun.
+"""Unsent entry: one micro-confession that never got sent.
 
-Writes the two-part confession (a To: line and the unsent message)
-to /output/entry.txt. Standard library only, no network, no clock,
-no randomness: byte-identical output on every run.
+Running this file writes the confession into entry.txt inside the
+output folder named by MAKEFUN_OUTPUT_DIR (default /output). Only the
+standard library is used, and the bytes written never change between
+runs: no clock, no randomness, no network.
 """
 
+from pathlib import Path
 import os
 
-TEXT = "To: Dad\nI got the job. I almost called you from the parking lot before I remembered."
+CONFESSION = "To: Dad\nI got the job. I almost called you from the parking lot before I remembered."
+ENTRY_NAME = "entry.txt"
 
 
-def main():
-    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
-    os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, "entry.txt")
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        f.write(TEXT)
+def output_folder() -> Path:
+    return Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
+
+
+def write_confession() -> None:
+    folder = output_folder()
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / ENTRY_NAME).write_text(CONFESSION, encoding="utf-8", newline="")
 
 
 if __name__ == "__main__":
-    main()
+    write_confession()
